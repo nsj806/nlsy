@@ -4,7 +4,7 @@ library(stringr)
 
 sink("out79.txt")
 
-data <- readRDS("./nlsy_data")
+data <- readRDS("./data/nlsy_data")
 #str(data)
 
 data <- data %>%gather(var, val, -c(CASEID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, SAMPLE_ID_1979))
@@ -22,5 +22,5 @@ data$job_num <- with(data, ifelse(year_1 == "XRND", job_num_1, ""))
 data$new_var_num <- with(data, paste0(new_var, job_num))
 data <- data %>% select(CASEID_1979,SAMPLE_ID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, val, new_var_num) %>% mutate(indid=row_number()) %>% spread(new_var_num, val)
 
-saveRDS(data, "./nsly79_data_1")
+saveRDS(data, "./data/nsly79_data_1")
 sink()
