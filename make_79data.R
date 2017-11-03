@@ -1,4 +1,4 @@
-setwd("~/OneDrive - Cuny GradCenter/Mobility/replicate_psid")
+# setwd("~/OneDrive - Cuny GradCenter/Mobility/replicate_psid")
 library(tidyverse)
 library(stringr)
 
@@ -20,6 +20,8 @@ data$new_var <- with(data, ifelse(year_1=="XRND", new_var2, new_var1))
 data$job_num <- with(data, ifelse(year_1 == "XRND", job_num_1, ""))
 
 data$new_var_num <- with(data, paste0(new_var, job_num))
+print(head(data))
+
 data <- data %>% select(CASEID_1979,SAMPLE_ID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, val, new_var_num) %>% mutate(indid=row_number()) %>% spread(new_var_num, val)
 
 saveRDS(data, "./data/nsly79_data_1")

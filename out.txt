@@ -1,0 +1,74 @@
+
+R version 3.4.2 (2017-09-28) -- "Short Summer"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # setwd("~/OneDrive - Cuny GradCenter/Mobility/replicate_psid")
+> library(tidyverse)
+Loading tidyverse: ggplot2
+Loading tidyverse: tibble
+Loading tidyverse: tidyr
+Loading tidyverse: readr
+Loading tidyverse: purrr
+Loading tidyverse: dplyr
+Conflicts with tidy packages ---------------------------------------------------
+filter(): dplyr, stats
+lag():    dplyr, stats
+> library(stringr)
+> 
+> sink("out79.txt")
+> 
+> data <- readRDS("./data/nlsy_data")
+> #str(data)
+> 
+> data <- data %>%gather(var, val, -c(CASEID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, SAMPLE_ID_1979))
+> 
+> data$job_num_1 <- str_sub(data$var, -7, -8)
+> data$year_1 <- str_sub(data$var, -4, -1)
+> data$year_2 <- str_sub(data$var, -12, -9)
+> data$new_var1 <- str_sub(data$var, 1, -6)
+> data$new_var2 <- str_sub(data$var, 1, -15)
+> 
+> data$year <- with(data, ifelse(year_1=="XRND", year_2, year_1))
+> data$new_var <- with(data, ifelse(year_1=="XRND", new_var2, new_var1))
+> data$job_num <- with(data, ifelse(year_1 == "XRND", job_num_1, ""))
+> 
+> data$new_var_num <- with(data, paste0(new_var, job_num))
+> print(head(data))
+> 
+> data <- data %>% select(CASEID_1979,SAMPLE_ID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, val, new_var_num) %>% mutate(indid=row_number()) %>% spread(new_var_num, val)
+
+ *** caught segfault ***
+address 0x7f43a7ef0508, cause 'memory not mapped'
+
+Traceback:
+ 1: .Call(`_tibble_matrixToDataFrame`, x)
+ 2: matrixToDataFrame(x)
+ 3: get("as_tibble.matrix", asNamespace("tibble"), mode = "function")(x)
+ 4: as_tibble_matrix(ordered)
+ 5: spread.data.frame(., new_var_num, val)
+ 6: spread(., new_var_num, val)
+ 7: function_list[[k]](value)
+ 8: withVisible(function_list[[k]](value))
+ 9: freduce(value, `_function_list`)
+10: `_fseq`(`_lhs`)
+11: eval(quote(`_fseq`(`_lhs`)), env, env)
+12: eval(quote(`_fseq`(`_lhs`)), env, env)
+13: withVisible(eval(quote(`_fseq`(`_lhs`)), env, env))
+14: data %>% select(CASEID_1979, SAMPLE_ID_1979, SAMPLE_RACE_78SCRN,     SAMPLE_SEX_1979, val, new_var_num) %>% mutate(indid = row_number()) %>%     spread(new_var_num, val)
+An irrecoverable exception occurred. R is aborting now ...
+/var/spool/slurmd/job91254/slurm_script: line 8: 184823 Segmentation fault      (core dumped) R --vanilla --no-save < make_79data.R

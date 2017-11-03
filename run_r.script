@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#SBATCH --job-name=nlsy
+#SBATCH --output=out.txt
+#SBATCH --partition=bigmem
+#SBATCH --mem=250GB
+
+R --vanilla --no-save < make_79data.R
