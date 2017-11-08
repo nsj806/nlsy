@@ -2,7 +2,8 @@
 
 #SBATCH --job-name=nlsy
 #SBATCH --output=out.txt
-#SBATCH --partition=bigmem
-#SBATCH --mem=250GB
+#SBATCH --error=out.err
+#SBATCH -p bigmem
+#SBATCH --mem=500GG
 
 R --vanilla --no-save < make_79data.R

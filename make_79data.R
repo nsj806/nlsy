@@ -1,5 +1,6 @@
 # setwd("~/OneDrive - Cuny GradCenter/Mobility/replicate_psid")
-library(tidyverse)
+library(dplyr)
+library(tidyr)
 library(stringr)
 
 data <- readRDS("./data/nlsy_data")
@@ -20,6 +21,14 @@ data$job_num <- with(data, ifelse(year_1 == "XRND", job_num_1, ""))
 data$new_var_num <- with(data, paste0(new_var, job_num))
 print(head(data))
 
-data <- data %>% select(CASEID_1979,SAMPLE_ID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, val,year, new_var_num) %>% mutate(indid=row_number()) %>% spread(new_var_num, val)
+data$indid <- rownames(data)
+
+data <- data %>% select(CASEID_1979,SAMPLE_ID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, val,year, indid, new_var_num)
 
 saveRDS(data, "./data/nsly79_data_1")
+data <- readRDS("./data/nsly79_data_1")
+print(table(data$new_var_num))
+print(head(table(data$indid)[order(-table(data$indid))]))
+data_wide <- reshape2::dcast(data, CASEID_1979+SAMPLE_RACE_78SCRN+SAMPLE_SEX_1979+year+SAMPLE_ID_1079~new_var_num, value.var=c("val"))
+print("done")
+saveRDS(data_wide, "./data/nsly79_data_w")

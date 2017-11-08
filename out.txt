@@ -18,57 +18,78 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > # setwd("~/OneDrive - Cuny GradCenter/Mobility/replicate_psid")
-> library(tidyverse)
-Loading tidyverse: ggplot2
-Loading tidyverse: tibble
-Loading tidyverse: tidyr
-Loading tidyverse: readr
-Loading tidyverse: purrr
-Loading tidyverse: dplyr
-Conflicts with tidy packages ---------------------------------------------------
-filter(): dplyr, stats
-lag():    dplyr, stats
+> library(dplyr)
+> library(tidyr)
 > library(stringr)
 > 
-> data <- readRDS("./data/nlsy_data")
-> #str(data)
-> 
-> data <- data %>%gather(var, val, -c(CASEID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, SAMPLE_ID_1979))
-> 
-> data$job_num_1 <- str_sub(data$var, -7, -8)
-> data$year_1 <- str_sub(data$var, -4, -1)
-> data$year_2 <- str_sub(data$var, -12, -9)
-> data$new_var1 <- str_sub(data$var, 1, -6)
-> data$new_var2 <- str_sub(data$var, 1, -15)
-> 
-> data$year <- with(data, ifelse(year_1=="XRND", year_2, year_1))
-> data$new_var <- with(data, ifelse(year_1=="XRND", new_var2, new_var1))
-> data$job_num <- with(data, ifelse(year_1 == "XRND", job_num_1, ""))
-> 
-> data$new_var_num <- with(data, paste0(new_var, job_num))
-> print(head(data))
-  CASEID_1979 SAMPLE_ID_1979 SAMPLE_RACE_78SCRN SAMPLE_SEX_1979
-1           1              5                  3               2
-2           2              5                  3               2
-3           3              5                  3               2
-4           4              5                  3               2
-5           5              1                  3               1
-6           6              1                  3               1
-               var val job_num_1 year_1 year_2    new_var1 new_var2 year
-1 VERSION_R26_2014  NA             2014   ION_ VERSION_R26       VE 2014
-2 VERSION_R26_2014 458             2014   ION_ VERSION_R26       VE 2014
-3 VERSION_R26_2014 458             2014   ION_ VERSION_R26       VE 2014
-4 VERSION_R26_2014  NA             2014   ION_ VERSION_R26       VE 2014
-5 VERSION_R26_2014  NA             2014   ION_ VERSION_R26       VE 2014
-6 VERSION_R26_2014 458             2014   ION_ VERSION_R26       VE 2014
-      new_var job_num new_var_num
-1 VERSION_R26         VERSION_R26
-2 VERSION_R26         VERSION_R26
-3 VERSION_R26         VERSION_R26
-4 VERSION_R26         VERSION_R26
-5 VERSION_R26         VERSION_R26
-6 VERSION_R26         VERSION_R26
-> 
-> data <- data %>% select(CASEID_1979,SAMPLE_ID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, val,year, new_var_num) %>% spread(new_var_num, val)
-Error: Duplicate identifiers for rows (16098535, 16111221, 16123907, 16136593, 16149279), (16161965, 16174651, 16187337, 16200023, 16212709, 16225395, 16238081, 16250767, 16263453, 16276139), (16288825, 16301511, 16314197, 16326883, 16339569, 16352255, 16364941, 16377627, 16390313, 16402999, 16415685, 16428371, 16441057), (16453743, 16466429, 16479115, 16491801, 16504487, 16517173, 16529859, 16542545, 16555231, 16567917, 16580603, 16593289, 16605975, 16618661, 16631347, 16644033, 16656719, 16669405), (16682091, 16694777, 16707463, 16720149, 16732835, 16745521, 16758207, 16770893, 16783579, 16796265, 16808951, 16821637, 16834323, 16847009, 16859695, 16872381, 16885067, 16897753, 16910439, 16923125), (16935811, 16948497, 16961183, 16973869, 16986555, 16999241, 17011927, 17024613, 17037299, 17049985, 17062671, 17075357, 17088043, 17100729, 17113415, 17126101, 17138787, 17151473, 17164159, 17176845, 17189531, 17202217), (17214903, 17227589, 17240275, 17252961, 17265647, 17278333, 17291019
-Execution halted
+> ## data <- readRDS("./data/nlsy_data")
+> ## #str(data)
+> ## 
+> ## data <- data %>%gather(var, val, -c(CASEID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, SAMPLE_ID_1979))
+> ## 
+> ## data$job_num_1 <- str_sub(data$var, -7, -8)
+> ## data$year_1 <- str_sub(data$var, -4, -1)
+> ## data$year_2 <- str_sub(data$var, -12, -9)
+> ## data$new_var1 <- str_sub(data$var, 1, -6)
+> ## data$new_var2 <- str_sub(data$var, 1, -15)
+> ## 
+> ## data$year <- with(data, ifelse(year_1=="XRND", year_2, year_1))
+> ## data$new_var <- with(data, ifelse(year_1=="XRND", new_var2, new_var1))
+> ## data$job_num <- with(data, ifelse(year_1 == "XRND", job_num_1, ""))
+> ## 
+> ## data$new_var_num <- with(data, paste0(new_var, job_num))
+> ## print(head(data))
+> ## 
+> ## data$indid <- rownames(data)
+> ## 
+> ## data <- data %>% select(CASEID_1979,SAMPLE_ID_1979, SAMPLE_RACE_78SCRN, SAMPLE_SEX_1979, val,year, indid, new_var_num)
+> ## 
+> ## saveRDS(data, "./data/nsly79_data_1")
+> data <- readRDS("./data/nsly79_data_1")
+> print(table(data$new_var_num))
+
+                AFQT-1 EMPLOYERS_ALL_HOURSWEE EMPLOYERS_ALL_HRLY_WAG 
+                 12686                6343000                6343000 
+      EMPLOYERS_ALL_OC   EMPLOYERS_ALL_PAYRAT    EMPLOYERS_ALL_TENUR 
+              10846530                6343000                6343000 
+  EMPLOYERS_ALL_WHYLEF          ENROLLMTREV00          ENROLLMTREV02 
+              11100250                  12686                  12686 
+         ENROLLMTREV04          ENROLLMTREV06          ENROLLMTREV79 
+                 12686                  12686                  12686 
+         ENROLLMTREV80          ENROLLMTREV81          ENROLLMTREV82 
+                 12686                  12686                  12686 
+         ENROLLMTREV83          ENROLLMTREV84          ENROLLMTREV85 
+                 12686                  12686                  12686 
+         ENROLLMTREV86          ENROLLMTREV87          ENROLLMTREV88 
+                 12686                  12686                  12686 
+         ENROLLMTREV89          ENROLLMTREV90          ENROLLMTREV91 
+                 12686                  12686                  12686 
+         ENROLLMTREV92          ENROLLMTREV93          ENROLLMTREV94 
+                 12686                  12686                  12686 
+         ENROLLMTREV96          ENROLLMTREV98                 FAM-2A 
+                 12686                  12686                  25372 
+                   HGC                  HH1-1            MIGR-6.01~M 
+                329836                 329836                 101488 
+           MIGR-6.01~Y            MIGR-6.02~M            MIGR-6.02~Y 
+                101488                 101488                 101488 
+           MIGR-6.03~M            MIGR-6.03~Y            MIGR-6.04~M 
+                101488                 101488                 101488 
+           MIGR-6.04~Y            MIGR-6.05~M            MIGR-6.05~Y 
+                101488                 101488                 101488 
+           MIGR-6.06~M            MIGR-6.06~Y            MIGR-6.07~M 
+                 76116                  76116                  38058 
+           MIGR-6.07~Y              MIGR-7.01              MIGR-7.02 
+                 38058                 101488                 101488 
+             MIGR-7.03              MIGR-7.04              MIGR-7.05 
+                101488                 101488                 101488 
+             MIGR-7.06              MIGR-7.07              POVSTATUS 
+                 76116                  38058                 329836 
+   Q13-5_TRUNC_REVISED                 REGION                SMSARES 
+                190290                 329836                 329836 
+           VERSION_R26             WKSOLF-SLI            WKSUEMP-SLI 
+                 12686                 329836                 329836 
+> print(head(table(data$indid)[order(-table(data$indid))]))
+
+     1     10    100   1000  10000 100000 
+     1      1      1      1      1      1 
+> data_wide <- reshape2::dcast(data, CASEID_1979+SAMPLE_RACE_78SCRN+SAMPLE_SEX_1979+year+SAMPLE_ID_1079~new_var_num, value.var=c("val"))
